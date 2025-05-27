@@ -1,0 +1,2124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Simulador de Gastos - Quermesse Santa Teresinha Doutora</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/png" href="assets/fav_logo_quermesse.webp" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-image: url("assets/bg.webp");
+        background-repeat: repeat;
+        background-size: auto;
+        background-position: initial;
+        background-attachment: scroll;
+        color: #4e342e;
+        margin: auto;
+        background-color: #fff8e1;
+        /* Adicione padding-bottom para dar espaço ao footer fixo */
+        padding-bottom: 90px; /* Ajuste este valor conforme necessário */
+      }
+
+      .festa-title {
+        font-family: "Pacifico", cursive;
+      }
+
+      .category-tab.active {
+        background-color: #ff3535;
+        color: white;
+      }
+
+      .product-item:hover {
+        background-color: rgba(255, 107, 53, 0.1);
+      }
+
+      .quantity-control {
+        display: flex;
+        align-items: center;
+      }
+
+      .quantity-btn {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 500%;
+        font-weight: bold;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .quantity-input {
+        width: 40px;
+        text-align: center;
+        border: none;
+        background: transparent;
+        font-weight: bold;
+      }
+
+      .quantity-input:focus {
+        outline: none;
+      }
+
+      .bingo-info {
+        background-color: rgba(255, 107, 53, 0.1);
+        border-left: 4px solid hsl(0, 100%, 60%);
+        padding: 12px;
+        margin-bottom: 16px;
+        border-radius: 0 8px 8px 0;
+      }
+
+      #items-popup {
+        transition: opacity 0.3s ease;
+      }
+
+      /* Animação suave para o popup */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      #items-popup.show {
+        display: flex;
+        animation: fadeIn 0.3s ease;
+      }
+
+      body, input, button {
+    font-size: 16px;
+  }
+    </style>
+  </head>
+
+  <body>
+    <img
+      src="assets/bandeira_esq.webp"
+      alt="Bandeira esquerda"
+      class="fixed top-0 left-0 w-[30%] pointer-events-none"
+    />
+    <img
+      src="assets/bandeira_dir.webp"
+      alt="Bandeira direita"
+      class="fixed top-0 right-0 w-[30%] pointer-events-none"
+    />
+    <div class="container mx-auto px-2 sm:px-2 sm:px-4 py-8 relative">
+      <img
+        src="assets/logo_quermesse.webp"
+        alt="Banner Quermesse"
+        class="max-w-[300px] w-full mx-auto mb-5 block"
+      />
+      <div class="flex justify-center space-x-4 mb-5">
+        <a
+          href="https://facebook.com/matrizdesantateresinhadoutora"
+          target="_blank"
+          aria-label="Facebook"
+        >
+          <img
+            src="assets/facebook.png"
+            alt="Facebook"
+            class="w-[50px] h-[50px] hover:opacity-80 transition-opacity duration-300"
+          />
+        </a>
+        <a
+          href="https://www.instagram.com/matrizdesantateresinhadoutora/"
+          target="_blank"
+          aria-label="Instagram"
+        >
+          <img
+            src="assets/instagram.png"
+            alt="Instagram"
+            class="w-[50px] h-[50px] hover:opacity-80 transition-opacity duration-300"
+          />
+        </a>
+        <a
+          href="https://www.youtube.com/@santateresinhadra"
+          target="_blank"
+          aria-label="YouTube"
+        >
+          <img
+            src="assets/youtube.png"
+            alt="YouTube"
+            class="w-[50px] h-[50px] hover:opacity-80 transition-opacity duration-300"
+          />
+        </a>
+      </div>
+
+      <div
+        class="text-center mb-8 bg-white bg-opacity-100 rounded-lg p-6 shadow max-w-5xl mx-auto"
+      >
+        <h1 class="festa-title text-4xl md:text-5xl text-[#FF3535] mb-4">
+          Simule seus gastos na Quermesse!
+        </h1>
+        <p class="text-lg text-[#5E3023]">
+          Selecione abaixo os itens que deseja consumir e veja o valor total
+          para carregar seu cartão com praticidade.
+        </p>
+      </div>
+
+      <div
+        class="bg-white rounded-lg shadow-lg p-6 relative overflow-hidden max-w-5xl mx-auto"
+      >
+        <div
+          class="sticky top-0 z-50 bg-white flex flex-wrap justify-center mb-6 border-b border-[#FF9843] shadow pb-4"
+        >
+          <button
+            class="category-tab active px-2 sm:px-2 sm:px-4 py-2 rounded-lg text-lg font-semibold mr-2"
+            data-category="salgados"
+          >
+            Salgados
+          </button>
+          <button
+            class="category-tab px-2 sm:px-2 sm:px-4 py-2 rounded-lg text-lg font-semibold mr-2"
+            data-category="doces"
+          >
+            Doces
+          </button>
+          <button
+            class="category-tab px-2 sm:px-2 sm:px-4 py-2 rounded-lg text-lg font-semibold mr-2"
+            data-category="bebidas"
+          >
+            Bebidas
+          </button>
+          <button
+            class="category-tab px-2 sm:px-2 sm:px-4 py-2 rounded-lg text-lg font-semibold mr-2"
+            data-category="bebidas-quentes"
+          >
+            Bebidas Quentes
+          </button>
+          <button
+            class="category-tab px-2 sm:px-2 sm:px-4 py-2 rounded-lg text-lg font-semibold mr-2"
+            data-category="chopp"
+          >
+            Chopp
+          </button>
+          <button
+            class="category-tab px-2 sm:px-2 sm:px-4 py-2 rounded-lg text-lg font-semibold mr-2"
+            data-category="diversao"
+          >
+            Espaço Kids
+          </button>
+          <button
+            class="category-tab px-2 sm:px-2 sm:px-4 py-2 rounded-lg text-lg font-semibold"
+            data-category="bingo"
+          >
+            Bingo
+          </button>
+        </div>
+
+        <div class="category-content" id="salgados">
+          <div class="grid grid-cols-1 gap-1">
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Amendoim Salgado</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 7,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="amendoim-salgado"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="7.00"
+                    data-product="amendoim-salgado"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="amendoim-salgado"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Batata Frita</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 25,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="batata-frita"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="25.00"
+                    data-product="batata-frita"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="batata-frita"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Cachorro Quente</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 12,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="cachorro-quente"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="12.00"
+                    data-product="cachorro-quente"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="cachorro-quente"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Caldos</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 9,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="caldos"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="9.00"
+                    data-product="caldos"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="caldos"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Churrasco</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 12,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="churrasco"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="12.00"
+                    data-product="churrasco"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="churrasco"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Cuscuz</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 11,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="cuscuz"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="11.00"
+                    data-product="cuscuz"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="cuscuz"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Lanche De Pernil</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 16,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="lanche-pernil"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="16.00"
+                    data-product="lanche-pernil"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="lanche-pernil"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Milho Cozido</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 10,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="milho-cozido"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="10.00"
+                    data-product="milho-cozido"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="milho-cozido"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Milho Gourmet</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 12,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="milho-gourmet"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="12.00"
+                    data-product="milho-gourmet"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="milho-gourmet"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Pastel</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 12,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="pastel"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="12.00"
+                    data-product="pastel"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="pastel"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Pipoca</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 7,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="pipoca"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="7.00"
+                    data-product="pipoca"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="pipoca"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Pizza</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 13,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="pizza"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="13.00"
+                    data-product="pizza"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="pizza"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="category-content hidden" id="doces">
+          <div class="grid grid-cols-1 gap-1">
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Algodão Doce Pote</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 12,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="algodao-doce-pote"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="12.00"
+                    data-product="algodao-doce-pote"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="algodao-doce-pote"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Algodão Doce Saco</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 7,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="algodao-doce-saco"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="7.00"
+                    data-product="algodao-doce-saco"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="algodao-doce-saco"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Amendoim Doce</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 7,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="amendoim-doce"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="7.00"
+                    data-product="amendoim-doce"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="amendoim-doce"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Bolo Recheado (Fatia)</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 12,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="bolo-recheado"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="12.00"
+                    data-product="bolo-recheado"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="bolo-recheado"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Brigadeiro</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 6,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="brigadeiro"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="6.00"
+                    data-product="brigadeiro"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="brigadeiro"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Canjica do Padre</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 9,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="canjica"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="9.00"
+                    data-product="canjica"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="canjica"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Cocada</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 8,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="cocada"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="8.00"
+                    data-product="cocada"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="cocada"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Curau</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 6,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="curau"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="6.00"
+                    data-product="curau"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="curau"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Doce De Abóbora</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 8,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="doce-abobora"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="8.00"
+                    data-product="doce-abobora"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="doce-abobora"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Maçã Do Amor</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 12,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="maca-amor"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="12.00"
+                    data-product="maca-amor"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="maca-amor"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Morango C/ Chocolate</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 15,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="morango-chocolate"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="15.00"
+                    data-product="morango-chocolate"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="morango-chocolate"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Pamonha</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 10,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="pamonha"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="10.00"
+                    data-product="pamonha"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="pamonha"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Pau A Pique</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 10,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="pau-a-pique"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="10.00"
+                    data-product="pau-a-pique"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="pau-a-pique"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Pé De Moleque</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 8,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="pe-de-moleque"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="8.00"
+                    data-product="pe-de-moleque"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="pe-de-moleque"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Pipoca Gourmet</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 7,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="pipoca-gourmet"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="7.00"
+                    data-product="pipoca-gourmet"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="pipoca-gourmet"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Pudim</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 10,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="pudim"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="10.00"
+                    data-product="pudim"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="pudim"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Torta</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 10,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="torta"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="10.00"
+                    data-product="torta"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="torta"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="category-content hidden" id="bebidas">
+          <div class="grid grid-cols-1 gap-1">
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Água Com Gás</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 3,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="agua-com-gas"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="3.00"
+                    data-product="agua-com-gas"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="agua-com-gas"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Água Sem Gás</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 3,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="agua-sem-gas"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="3.00"
+                    data-product="agua-sem-gas"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="agua-sem-gas"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">H2O</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 6,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="h2o"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="6.00"
+                    data-product="h2o"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="h2o"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Heineken</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 9,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="heineken"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="9.00"
+                    data-product="heineken"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="heineken"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Refrigerante</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 6,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="refrigerante"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="6.00"
+                    data-product="refrigerante"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="refrigerante"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Suco Laranja</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 6,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="suco-laranja"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="6.00"
+                    data-product="suco-laranja"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="suco-laranja"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="category-content hidden" id="bebidas-quentes">
+          <div class="grid grid-cols-1 gap-1">
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Chocolate Quente</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 9,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="chocolate-quente"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="9.00"
+                    data-product="chocolate-quente"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="chocolate-quente"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Quentão</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 9,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="quentao"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="9.00"
+                    data-product="quentao"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="quentao"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Vinho Quente</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 9,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="vinho-quente"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="9.00"
+                    data-product="vinho-quente"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="vinho-quente"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="category-content hidden" id="chopp">
+          <div class="grid grid-cols-1 gap-1">
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Chopp Amarillo</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 9,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="chopp-Amarillo"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="9.00"
+                    data-product="chopp-Amarillo"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="chopp-Amarillo"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg"
+                >Promoção 3 Chopp's Amarillo</span
+              >
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 24,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="promocao-3-chopp-Amarillo"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="24.00"
+                    data-product="promocao-3-chopp-Amarillo"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="promocao-3-chopp-Amarillo"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Chopp Lund</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 9,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="chopp-lund"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="9.00"
+                    data-product="chopp-lund"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="chopp-lund"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Promoção 3 Chopp's Lund</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 24,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="promocao-3-chopp-lund"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="24.00"
+                    data-product="promocao-3-chopp-lund"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="promocao-3-chopp-lund"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="category-content hidden" id="diversao">
+          <div class="grid grid-cols-1 gap-1">
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Brinquedo Individual</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 10,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="brinquedo-individual"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="10.00"
+                    data-product="brinquedo-individual"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="brinquedo-individual"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Passaporte</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 35,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="passaporte"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="35.00"
+                    data-product="passaporte"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="passaporte"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Pesca</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 10,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="pesca"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="10.00"
+                    data-product="pesca"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="pesca"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Tiro Ao Alvo</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 10,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="tiro-ao-alvo"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="10.00"
+                    data-product="tiro-ao-alvo"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="tiro-ao-alvo"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="category-content hidden" id="bingo">
+          <div class="bingo-info">
+            <h3 class="text-xl font-bold mb-2 text-[#5E3023]">Sobre o Bingo</h3>
+            <p class="mb-2">
+              O bingo da quermesse tem três categorias de rodadas, cada uma com
+              diferentes valores e prêmios:
+            </p>
+            <ul class="list-disc pl-5 mb-4">
+              <li>
+                <strong>Rodada R$ 5,00</strong> - Prêmios de menor valor agregado</li>
+              <li><strong>Rodada R$ 10,00</strong> - Prêmios de valor médio</li>
+              <li>
+                <strong>Rodada R$ 15,00</strong> - Prêmios especiais de maior
+                valor
+              </li>
+            </ul>
+            <p>
+              Obs: as cartelas serão vendidas pela equipe do bingo antes do início de cada rodada.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 gap-1">
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Rodada R$ 5,00</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 5,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="bingo-5"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="5.00"
+                    data-product="bingo-5"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="bingo-5"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Rodada R$ 10,00</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 10,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="bingo-10"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="10.00"
+                    data-product="bingo-10"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="bingo-10"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="product-item flex justify-between items-center p-3 rounded-lg"
+            >
+              <span class="text-base sm:text-lg">Rodada R$ 15,00</span>
+              <div class="flex items-center">
+                <span class="font-semibold mr-4">R$ 15,00</span>
+                <div class="quantity-control">
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="decrease"
+                    data-product="bingo-15"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    value="0"
+                    min="0"
+                    data-price="15.00"
+                    data-product="bingo-15"
+                    readonly
+                  />
+                  <button
+                    class="quantity-btn bg-[#FF6B35] text-white"
+                    data-action="increase"
+                    data-product="bingo-15"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="fixed bottom-0 left-0 w-full bg-[#FF6B35] text-white z-50 shadow-lg"
+      >
+        <div class="container mx-auto px-4 py-3 flex justify-center items-center space-x-6 text-center">
+
+          <div>
+            <p class="text-sm">Total a pagar</p>
+            <p class="text-3xl font-bold" id="total-value">R$ 0,00</p>
+          </div>
+          <div class="flex space-x-3">
+            <button
+              id="reset-btn"
+              class="bg-white text-[#FF6B35] font-bold py-2 px-4 rounded-lg text-sm hover:bg-[#FFD151] transition-colors"
+            >
+              Limpar
+            </button>
+            <button
+              id="show-items-btn"
+              class="bg-[#5E3023] text-white font-bold py-2 px-4 rounded-lg text-sm hover:bg-[#7a4a3a] transition-colors"
+            >
+              Ver Itens
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="items-popup"
+        class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center"
+      >
+        <div class="bg-white rounded-lg max-w-md w-full max-h-[80vh] overflow-y-auto mx-4 sm:mx-0">
+
+          <div class="p-4 border-b flex justify-between items-center">
+            <h3 class="text-xl font-bold text-[#5E3023]">Itens Selecionados</h3>
+            <button id="close-popup" class="text-[#FF6B35] font-bold text-xl">
+              ×
+            </button>
+          </div>
+          <div class="p-4">
+            <ul id="selected-items-list" class="divide-y">
+              <li class="py-3 text-center text-gray-500 italic">
+                Nenhum item selecionado
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="bg-[#5E3023] text-white text-center py-4 relative z-40">
+      <p>
+        © 2025 Matriz de Santa Teresinha Doutora. Todos os direitos reservados.
+      </p>
+      <p class="text-sm mt-2">
+        Website desenvolvido pela PASCOM – Pastoral da Comunicação <br />
+        <a
+          href="mailto:pascomsantateresinhadoutora@gmail.com"
+          class="underline hover:text-[#FFD151] transition-colors"
+        >
+          pascomsantateresinhadoutora@gmail.com
+        </a>
+      </p>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Tab switching
+        const tabs = document.querySelectorAll(".category-tab");
+        const contents = document.querySelectorAll(".category-content");
+
+        tabs.forEach((tab) => {
+          tab.addEventListener("click", () => {
+            // Remove active class from all tabs
+            tabs.forEach((t) => t.classList.remove("active"));
+            // Add active class to clicked tab
+            tab.classList.add("active");
+
+            // Hide all content
+            contents.forEach((content) => content.classList.add("hidden"));
+            // Show content for clicked tab
+            const categoryId = tab.getAttribute("data-category");
+            document.getElementById(categoryId).classList.remove("hidden");
+          });
+        });
+
+        // Quantity controls
+        const quantityBtns = document.querySelectorAll(".quantity-btn");
+        const quantityInputs = document.querySelectorAll(".quantity-input");
+        const totalValue = document.getElementById("total-value");
+        const selectedItemsList = document.getElementById(
+          "selected-items-list"
+        );
+
+        // ========== NOVO CÓDIGO DO POPUP ==========
+        const showItemsBtn = document.getElementById("show-items-btn");
+        const closePopupBtn = document.getElementById("close-popup");
+        const itemsPopup = document.getElementById("items-popup");
+
+        showItemsBtn.addEventListener("click", () => {
+          itemsPopup.classList.add("show");
+          itemsPopup.classList.remove("hidden");
+        });
+
+        closePopupBtn.addEventListener("click", () => {
+          itemsPopup.classList.remove("show");
+          itemsPopup.classList.add("hidden");
+        });
+
+        // Fechar ao clicar fora
+        itemsPopup.addEventListener("click", (e) => {
+          if (e.target === itemsPopup) {
+            itemsPopup.classList.remove("show");
+            itemsPopup.classList.add("hidden");
+          }
+        });
+
+        function updateTotal() {
+          let total = 0;
+          let selectedItems = [];
+          let hasSelectedItems = false;
+
+          quantityInputs.forEach((input) => {
+            const quantity = parseInt(input.value);
+            if (quantity > 0) {
+              hasSelectedItems = true;
+              const price = parseFloat(input.getAttribute("data-price"));
+              const productId = input.getAttribute("data-product");
+              const productName = input
+                .closest(".product-item")
+                .querySelector("span:first-child").textContent;
+
+              total += price * quantity;
+              selectedItems.push({
+                name: productName,
+                quantity: quantity,
+                price: price,
+                total: price * quantity,
+              });
+            }
+          });
+
+          // Update total value
+          totalValue.textContent = `R$ ${total.toFixed(2).replace(".", ",")}`;
+
+          // Update selected items list
+          if (hasSelectedItems) {
+            let listHTML = "";
+            selectedItems.forEach((item) => {
+              listHTML += `<li>${item.quantity}x ${item.name} - R$ ${item.total
+                .toFixed(2)
+                .replace(".", ",")}</li>`;
+            });
+            selectedItemsList.innerHTML = listHTML;
+          } else {
+            selectedItemsList.innerHTML =
+              '<li class="text-center text-sm italic">Nenhum item selecionado</li>';
+          }
+        }
+
+        quantityBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const action = btn.getAttribute("data-action");
+            const productId = btn.getAttribute("data-product");
+            const input = document.querySelector(
+              `.quantity-input[data-product="${productId}"]`
+            );
+            let value = parseInt(input.value);
+
+            if (action === "increase") {
+              value++;
+            } else if (action === "decrease" && value > 0) {
+              value--;
+            }
+
+            input.value = value;
+            updateTotal();
+          });
+        });
+
+        // Reset button
+        const resetBtn = document.getElementById("reset-btn");
+        resetBtn.addEventListener("click", () => {
+          quantityInputs.forEach((input) => {
+            input.value = 0;
+          });
+          updateTotal();
+        });
+      });
+    </script>
+  </body>
+</html>
